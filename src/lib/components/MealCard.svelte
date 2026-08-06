@@ -8,7 +8,7 @@
 
 <a
 	href={`/meals/${meal.id}/edit`}
-	class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-primary-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+	class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-primary-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 >
 	<div class="flex items-start justify-between gap-3">
 		<div>

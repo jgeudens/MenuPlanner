@@ -26,7 +26,10 @@ function mapMealRow(row: MealRow): MealWithIngredients {
 	};
 }
 
-export async function listRecentMeals(limit: number, offset: number): Promise<MealWithIngredients[]> {
+export async function listRecentMeals(
+	limit: number,
+	offset: number
+): Promise<MealWithIngredients[]> {
 	const { data, error } = await supabase
 		.from('meals')
 		.select(MEAL_WITH_INGREDIENTS_SELECT)

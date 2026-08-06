@@ -5,8 +5,7 @@ export type MealFormErrors = Partial<
 >;
 
 export type MealFormValidationResult =
-	| { valid: true; data: MealFormInput }
-	| { valid: false; errors: MealFormErrors };
+	{ valid: true; data: MealFormInput } | { valid: false; errors: MealFormErrors };
 
 export type MealFormRawInput = {
 	name: string;

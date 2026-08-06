@@ -20,7 +20,7 @@
 			{#each links as link (link.href)}
 				<a
 					href={link.href}
-					class="rounded-md px-3 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 {isActive(
+					class="rounded-md px-3 py-1.5 text-sm font-medium focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 focus-visible:outline-none {isActive(
 						link.href
 					)
 						? 'bg-primary-800 text-white'
@@ -32,7 +32,7 @@
 			<form method="POST" action="/login?/logout">
 				<button
 					type="submit"
-					class="rounded-md px-3 py-1.5 text-sm font-medium text-primary-100 hover:bg-primary-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
+					class="rounded-md px-3 py-1.5 text-sm font-medium text-primary-100 hover:bg-primary-600 hover:text-white focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 focus-visible:outline-none"
 				>
 					Uitloggen
 				</button>

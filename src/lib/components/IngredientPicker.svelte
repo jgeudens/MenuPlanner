@@ -20,6 +20,7 @@
 	let suggestions = $state<Suggestion[]>([]);
 	let open = $state(false);
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+	let blurTimer: ReturnType<typeof setTimeout> | undefined;
 
 	function isAlreadySelected(candidateName: string) {
 		return selected.some((s) => s.name.toLowerCase() === candidateName.trim().toLowerCase());
@@ -34,13 +35,30 @@
 		suggestions = res.ok ? await res.json() : [];
 	}
 
+	function onFocus() {
+		clearTimeout(blurTimer);
+		open = true;
+	}
+
+	function onBlur() {
+		// Delayed so a click on a suggestion button registers first. Cleared
+		// by onFocus/onInput so it can never close a dropdown reopened by a
+		// later interaction (it would otherwise fire on its own schedule
+		// regardless of what happened in between).
+		blurTimer = setTimeout(() => {
+			open = false;
+		}, 150);
+	}
+
 	function onInput() {
+		clearTimeout(blurTimer);
 		open = true;
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => fetchSuggestions(query), 200);
 	}
 
 	function addSelection(item: Selected) {
+		clearTimeout(blurTimer);
 		if (!isAlreadySelected(item.name)) {
 			selected = [...selected, item];
 		}
@@ -76,7 +94,10 @@
 		suggestions.some((s) => s.name.toLowerCase() === query.trim().toLowerCase())
 	);
 
-	onDestroy(() => clearTimeout(debounceTimer));
+	onDestroy(() => {
+		clearTimeout(debounceTimer);
+		clearTimeout(blurTimer);
+	});
 </script>
 
 <div class="relative">
@@ -93,7 +114,7 @@
 				<button
 					type="button"
 					onclick={() => remove(item)}
-					class="rounded-full text-primary-600 hover:text-primary-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+					class="rounded-full text-primary-600 hover:text-primary-900 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 					aria-label={`${item.name} verwijderen`}
 				>
 					&times;
@@ -107,10 +128,10 @@
 		bind:value={query}
 		oninput={onInput}
 		onkeydown={onKeydown}
-		onfocus={() => (open = true)}
-		onblur={() => setTimeout(() => (open = false), 150)}
+		onfocus={onFocus}
+		onblur={onBlur}
 		{placeholder}
-		class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+		class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 	/>
 
 	{#if open && query.trim() && (suggestions.length > 0 || mode === 'create')}

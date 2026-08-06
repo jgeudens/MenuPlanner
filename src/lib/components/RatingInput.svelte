@@ -1,8 +1,5 @@
 <script lang="ts">
-	let {
-		value = $bindable(0),
-		name = 'rating'
-	}: { value?: number; name?: string } = $props();
+	let { value = $bindable(0), name = 'rating' }: { value?: number; name?: string } = $props();
 
 	function setRating(n: number) {
 		value = n;
@@ -18,7 +15,7 @@
 			aria-pressed={value === n}
 			aria-label={`${n} van 5 sterren`}
 			onclick={() => setRating(n)}
-			class="rounded p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1"
+			class="rounded p-0.5 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 focus-visible:outline-none"
 		>
 			<svg
 				viewBox="0 0 20 20"

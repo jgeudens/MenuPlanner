@@ -15,3 +15,11 @@ export async function searchIngredients(query: string, limit = 10): Promise<Ingr
 	if (error) throw error;
 	return data ?? [];
 }
+
+export async function getIngredientsByIds(ids: string[]): Promise<Ingredient[]> {
+	if (ids.length === 0) return [];
+
+	const { data, error } = await supabase.from('ingredients').select('id, name').in('id', ids);
+	if (error) throw error;
+	return data ?? [];
+}

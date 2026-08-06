@@ -30,7 +30,7 @@
 			type="text"
 			required
 			value={form?.values?.name ?? ''}
-			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 		/>
 	</FormField>
 
@@ -41,7 +41,7 @@
 			type="date"
 			required
 			value={form?.values?.date ?? todayIso()}
-			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 		/>
 	</FormField>
 
@@ -59,14 +59,14 @@
 			name="notes"
 			rows="3"
 			value={form?.values?.notes ?? ''}
-			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 		></textarea>
 	</FormField>
 
 	<div class="flex gap-3">
 		<button
 			type="submit"
-			class="rounded-md bg-primary-600 px-4 py-2 font-medium text-white hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+			class="rounded-md bg-primary-600 px-4 py-2 font-medium text-white hover:bg-primary-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:outline-none"
 		>
 			Opslaan
 		</button>
