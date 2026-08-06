@@ -6,7 +6,7 @@ import { SESSION_COOKIE_NAME, verifyPasscode, createSessionCookieValue } from '$
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
 
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
+	login: async ({ request, cookies }) => {
 		const data = await request.formData();
 		const passcode = String(data.get('passcode') ?? '').trim();
 

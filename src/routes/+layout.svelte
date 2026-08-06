@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { page } from '$app/state';
-	import { replaceState } from '$app/navigation';
+	import { afterNavigate, replaceState } from '$app/navigation';
 	import { toast, showToast } from '$lib/stores';
 	import Nav from '$lib/components/Nav.svelte';
 
@@ -13,13 +13,21 @@
 		'meal-deleted': { message: 'Gerecht verwijderd.', kind: 'success' }
 	};
 
-	$effect(() => {
+	// afterNavigate (rather than a top-level $effect) waits until the router
+	// has finished initializing, which replaceState requires — calling it
+	// from $effect races router init on the very first page load. When the
+	// page itself lands directly on a ?toast=… URL (e.g. after a form action
+	// redirect), afterNavigate can still fire a tick before the router marks
+	// itself started, so the replaceState call is deferred one more tick.
+	afterNavigate(() => {
 		const code = page.url.searchParams.get('toast');
 		if (code && toastMessages[code]) {
 			showToast(toastMessages[code].message, toastMessages[code].kind);
-			const url = new URL(page.url);
-			url.searchParams.delete('toast');
-			replaceState(url, {});
+			setTimeout(() => {
+				const url = new URL(page.url);
+				url.searchParams.delete('toast');
+				replaceState(url, {});
+			});
 		}
 	});
 
@@ -40,7 +48,7 @@
 
 	{#if $toast}
 		<div
-			class="fixed inset-x-0 top-4 z-50 flex justify-center px-4"
+			class="fixed inset-x-0 top-20 z-50 flex justify-center px-4"
 			role="status"
 			aria-live="polite"
 		>

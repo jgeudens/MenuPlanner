@@ -117,6 +117,95 @@ as $$
 	order by m.date desc;
 $$;
 
+-- Create a meal together with its ingredients in one atomic call (PostgREST
+-- can't run a client-side multi-table transaction, so this does it server
+-- side). Ingredient names are upserted case-insensitively against the
+-- ingredients_name_lower_idx unique index, creating new ones as needed.
+-- security invoker: runs as the calling (anon) role, so the RLS policies
+-- above are still enforced on every insert this function performs.
+create or replace function create_meal(
+	p_name text,
+	p_date date,
+	p_rating smallint,
+	p_notes text,
+	p_ingredient_names text[]
+)
+returns meals
+language plpgsql
+security invoker
+as $$
+declare
+	v_meal meals;
+	v_ingredient_name text;
+	v_ingredient ingredients;
+begin
+	insert into meals (name, date, rating, notes)
+	values (trim(p_name), p_date, p_rating, nullif(trim(p_notes), ''))
+	returning * into v_meal;
+
+	foreach v_ingredient_name in array p_ingredient_names loop
+		insert into ingredients (name)
+		values (trim(v_ingredient_name))
+		on conflict (lower(name)) do update set name = ingredients.name
+		returning * into v_ingredient;
+
+		insert into meal_ingredients (meal_id, ingredient_id)
+		values (v_meal.id, v_ingredient.id)
+		on conflict do nothing;
+	end loop;
+
+	return v_meal;
+end;
+$$;
+
+-- Same as create_meal, but replaces an existing meal's fields and its full
+-- ingredient list (deletes and re-inserts the meal_ingredients rows).
+create or replace function update_meal(
+	p_meal_id uuid,
+	p_name text,
+	p_date date,
+	p_rating smallint,
+	p_notes text,
+	p_ingredient_names text[]
+)
+returns meals
+language plpgsql
+security invoker
+as $$
+declare
+	v_meal meals;
+	v_ingredient_name text;
+	v_ingredient ingredients;
+begin
+	update meals
+	set name = trim(p_name),
+		date = p_date,
+		rating = p_rating,
+		notes = nullif(trim(p_notes), '')
+	where id = p_meal_id
+	returning * into v_meal;
+
+	if not found then
+		raise exception 'Meal not found' using errcode = 'P0002';
+	end if;
+
+	delete from meal_ingredients where meal_id = p_meal_id;
+
+	foreach v_ingredient_name in array p_ingredient_names loop
+		insert into ingredients (name)
+		values (trim(v_ingredient_name))
+		on conflict (lower(name)) do update set name = ingredients.name
+		returning * into v_ingredient;
+
+		insert into meal_ingredients (meal_id, ingredient_id)
+		values (v_meal.id, v_ingredient.id)
+		on conflict do nothing;
+	end loop;
+
+	return v_meal;
+end;
+$$;
+
 -- Explicit grants.
 -- Required because "Automatically expose new tables" is disabled on the
 -- Supabase project (recommended: it also guarantees app_config never gets
@@ -125,3 +214,5 @@ grant usage on schema public to anon;
 grant select, insert, update, delete on meals, ingredients, meal_ingredients to anon;
 grant execute on function check_household_passcode(text) to anon;
 grant execute on function search_meals_by_ingredients(uuid[]) to anon;
+grant execute on function create_meal(text, date, smallint, text, text[]) to anon;
+grant execute on function update_meal(uuid, text, date, smallint, text, text[]) to anon;

@@ -10,7 +10,11 @@
 
 <div class="mx-auto mt-16 max-w-sm">
 	<h1 class="mb-6 text-center text-2xl font-semibold text-gray-900">Pantry Log</h1>
-	<form method="POST" class="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+	<form
+		method="POST"
+		action="?/login"
+		class="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+	>
 		<div>
 			<label for="passcode" class="mb-1 block text-sm font-medium text-gray-700">
 				Toegangscode
