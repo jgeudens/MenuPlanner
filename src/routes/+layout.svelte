@@ -1,9 +1,60 @@
 <script lang="ts">
-	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import '../app.css';
+	import { page } from '$app/state';
+	import { replaceState } from '$app/navigation';
+	import { toast, showToast } from '$lib/stores';
+	import Nav from '$lib/components/Nav.svelte';
 
 	let { children } = $props();
+
+	const toastMessages: Record<string, { message: string; kind: 'success' | 'error' }> = {
+		'meal-saved': { message: 'Gerecht opgeslagen.', kind: 'success' },
+		'meal-updated': { message: 'Gerecht bijgewerkt.', kind: 'success' },
+		'meal-deleted': { message: 'Gerecht verwijderd.', kind: 'success' }
+	};
+
+	$effect(() => {
+		const code = page.url.searchParams.get('toast');
+		if (code && toastMessages[code]) {
+			showToast(toastMessages[code].message, toastMessages[code].kind);
+			const url = new URL(page.url);
+			url.searchParams.delete('toast');
+			replaceState(url, {});
+		}
+	});
+
+	$effect(() => {
+		if ($toast) {
+			const timer = setTimeout(() => toast.set(null), 3000);
+			return () => clearTimeout(timer);
+		}
+	});
+
+	const isLoginPage = $derived(page.url.pathname === '/login');
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
-{@render children()}
+<div class="flex min-h-screen flex-col bg-gray-50 text-gray-900">
+	{#if !isLoginPage}
+		<Nav />
+	{/if}
+
+	{#if $toast}
+		<div
+			class="fixed inset-x-0 top-4 z-50 flex justify-center px-4"
+			role="status"
+			aria-live="polite"
+		>
+			<div
+				class="rounded-md px-4 py-2 text-sm font-medium shadow-lg {$toast.kind === 'success'
+					? 'bg-primary-600 text-white'
+					: 'bg-red-600 text-white'}"
+			>
+				{$toast.message}
+			</div>
+		</div>
+	{/if}
+
+	<main class="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
+		{@render children()}
+	</main>
+</div>

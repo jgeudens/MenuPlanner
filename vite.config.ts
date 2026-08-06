@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
 	plugins: [
@@ -17,6 +18,39 @@ export default defineConfig({
 			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 			adapter: adapter()
+		}),
+		SvelteKitPWA({
+			registerType: 'autoUpdate',
+			manifest: {
+				name: 'Pantry Log',
+				short_name: 'Pantry Log',
+				description: 'Een privélogboek van gerechten die je echt hebt gekookt.',
+				lang: 'nl',
+				theme_color: '#1d4ed8',
+				background_color: '#ffffff',
+				display: 'standalone',
+				start_url: '/',
+				icons: [
+					{ src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+					{ src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+					{
+						src: 'pwa-512x512-maskable.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'maskable'
+					}
+				]
+			},
+			workbox: {
+				globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
+				runtimeCaching: [
+					{
+						urlPattern: ({ request }) => request.mode === 'navigate',
+						handler: 'NetworkFirst',
+						options: { cacheName: 'pantry-log-pages', networkTimeoutSeconds: 3 }
+					}
+				]
+			}
 		})
 	],
 	test: {
