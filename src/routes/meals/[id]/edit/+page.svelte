@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
 	import FormField from '$lib/components/FormField.svelte';
 	import IngredientPicker from '$lib/components/IngredientPicker.svelte';
@@ -77,7 +78,7 @@
 		>
 			Opslaan
 		</button>
-		<a href="/" class="rounded-md px-4 py-2 font-medium text-gray-600 hover:bg-gray-100">
+		<a href={resolve('/')} class="rounded-md px-4 py-2 font-medium text-gray-600 hover:bg-gray-100">
 			Annuleren
 		</a>
 	</div>

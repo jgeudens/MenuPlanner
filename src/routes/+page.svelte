@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
 	import MealCard from '$lib/components/MealCard.svelte';
 
@@ -15,7 +16,7 @@
 	<div class="rounded-lg border border-dashed border-gray-300 p-8 text-center">
 		<p class="text-gray-600">Nog geen gerechten gelogd.</p>
 		<a
-			href="/meals/new"
+			href={resolve('/meals/new')}
 			class="mt-3 inline-block font-medium text-primary-600 underline-offset-2 hover:text-primary-700 hover:underline"
 		>
 			Log je eerste gerecht
@@ -32,7 +33,7 @@
 		<div class="mt-6 flex justify-between">
 			{#if data.page > 1}
 				<a
-					href={`/?page=${data.page - 1}`}
+					href={resolve(`/?page=${data.page - 1}`)}
 					class="text-sm font-medium text-primary-600 hover:text-primary-700"
 				>
 					← Vorige
@@ -42,7 +43,7 @@
 			{/if}
 			{#if data.hasMore}
 				<a
-					href={`/?page=${data.page + 1}`}
+					href={resolve(`/?page=${data.page + 1}`)}
 					class="text-sm font-medium text-primary-600 hover:text-primary-700"
 				>
 					Volgende →

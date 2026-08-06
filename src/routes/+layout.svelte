@@ -26,6 +26,10 @@
 			setTimeout(() => {
 				const url = new URL(page.url);
 				url.searchParams.delete('toast');
+				// This reconstructs the current (already-resolved) URL after
+				// stripping one query param — it's not a navigation to a new
+				// route, so resolve() doesn't apply here.
+				// eslint-disable-next-line svelte/no-navigation-without-resolve
 				replaceState(url, {});
 			});
 		}

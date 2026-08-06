@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 
 	const links = [
 		{ href: '/', label: 'Overzicht' },
 		{ href: '/meals/new', label: 'Nieuw gerecht' },
 		{ href: '/search', label: 'Zoeken' },
 		{ href: '/stats', label: 'Statistieken' }
-	];
+	] as const;
 
 	function isActive(href: string) {
 		return href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
@@ -15,11 +16,11 @@
 
 <header class="bg-primary-700 text-white">
 	<div class="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
-		<a href="/" class="text-lg font-semibold tracking-tight">Pantry Log</a>
+		<a href={resolve('/')} class="text-lg font-semibold tracking-tight">Pantry Log</a>
 		<nav class="flex items-center gap-1">
 			{#each links as link (link.href)}
 				<a
-					href={link.href}
+					href={resolve(link.href)}
 					class="rounded-md px-3 py-1.5 text-sm font-medium focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 focus-visible:outline-none {isActive(
 						link.href
 					)

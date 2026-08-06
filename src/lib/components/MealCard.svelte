@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import RatingStars from './RatingStars.svelte';
 	import { formatDateNl } from '$lib/utils';
 	import type { MealWithIngredients } from '$lib/types';
@@ -7,7 +8,7 @@
 </script>
 
 <a
-	href={`/meals/${meal.id}/edit`}
+	href={resolve('/meals/[id]/edit', { id: meal.id })}
 	class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-primary-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 >
 	<div class="flex items-start justify-between gap-3">
