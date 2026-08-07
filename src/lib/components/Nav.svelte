@@ -30,6 +30,17 @@
 					{link.label}
 				</a>
 			{/each}
+			<span class="mx-1 h-5 w-px bg-primary-600" aria-hidden="true"></span>
+			<a
+				href={resolve('/admin')}
+				class="rounded-md px-3 py-1.5 text-sm font-medium focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 focus-visible:outline-none {isActive(
+					'/admin'
+				)
+					? 'bg-primary-800 text-white'
+					: 'text-primary-100 hover:bg-primary-600 hover:text-white'}"
+			>
+				Beheer
+			</a>
 			<form method="POST" action="/login?/logout">
 				<button
 					type="submit"

@@ -142,8 +142,54 @@ begin
 end;
 $$;
 
+-- Rename (correct) an ingredient, merging into an existing one on name collision.
+-- Names are stored lower(trim(...)), matching create_meal/update_meal. If another
+-- ingredient already has the target name (case-insensitively), the two are merged:
+-- every meal linked to the old ingredient is repointed to the surviving one and the
+-- old ingredient is deleted (allowed only after its meal_ingredients rows are gone,
+-- because of the on delete restrict FK). Returns true when a merge happened, false
+-- for a plain rename. security invoker so the household-access RLS still applies.
+-- Returns boolean (not table(id, name, ...)) on purpose: OUT columns named id/name
+-- would clash with the ingredients columns referenced in the body.
+create or replace function rename_ingredient(p_ingredient_id uuid, p_new_name text)
+returns boolean
+language plpgsql
+security invoker
+as $$
+declare
+	v_new_name text := lower(trim(p_new_name));
+	v_existing_id uuid;
+begin
+	if v_new_name = '' then
+		raise exception 'Ingredient name empty' using errcode = 'P0001';
+	end if;
+
+	select id into v_existing_id from ingredients
+	where lower(name) = v_new_name and id <> p_ingredient_id;
+
+	if found then
+		-- Merge: repoint links (insert-on-conflict avoids composite-PK dupes),
+		-- drop the old links, then delete the now-unreferenced old ingredient.
+		insert into meal_ingredients (meal_id, ingredient_id)
+		select mi.meal_id, v_existing_id from meal_ingredients mi
+		where mi.ingredient_id = p_ingredient_id
+		on conflict do nothing;
+		delete from meal_ingredients where ingredient_id = p_ingredient_id;
+		delete from ingredients where id = p_ingredient_id;
+		return true;
+	else
+		update ingredients set name = v_new_name where id = p_ingredient_id;
+		if not found then
+			raise exception 'Ingredient not found' using errcode = 'P0002';
+		end if;
+		return false;
+	end if;
+end;
+$$;
+
 -- Explicit grants (re-granting an already-granted privilege is a no-op, not an error).
 grant execute on function check_household_passcode(text) to anon;
 grant execute on function search_meals_by_ingredients(uuid[]) to anon;
 grant execute on function create_meal(text, date, smallint, text, text[]) to anon;
 grant execute on function update_meal(uuid, text, date, smallint, text, text[]) to anon;
+grant execute on function rename_ingredient(uuid, text) to anon;

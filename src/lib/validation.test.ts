@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateMealForm, type MealFormRawInput } from './validation';
+import { validateIngredientName, validateMealForm, type MealFormRawInput } from './validation';
 
 function raw(overrides: Partial<MealFormRawInput> = {}): MealFormRawInput {
 	return {
@@ -71,5 +71,25 @@ describe('validateMealForm', () => {
 		if (result.valid) {
 			expect(result.data.ingredientNames).toEqual(['tomaat', 'kip']);
 		}
+	});
+});
+
+describe('validateIngredientName', () => {
+	it('accepts a non-empty name and trims it', () => {
+		const result = validateIngredientName('  tomaat  ');
+		expect(result.valid).toBe(true);
+		if (result.valid) expect(result.data).toBe('tomaat');
+	});
+
+	it('rejects an empty name', () => {
+		const result = validateIngredientName('');
+		expect(result.valid).toBe(false);
+		if (!result.valid) expect(result.error).toBeDefined();
+	});
+
+	it('rejects a whitespace-only name', () => {
+		const result = validateIngredientName('   ');
+		expect(result.valid).toBe(false);
+		if (!result.valid) expect(result.error).toBeDefined();
 	});
 });
