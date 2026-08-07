@@ -25,6 +25,11 @@ npm install
 
 ### 2. Supabase-project opzetten
 
+Dit project is voor lokale ontwikkeling en testen (`npm run dev`, `npm run test:e2e`) — niet
+hetzelfde project als productie. Productie gebruikt een eigen, apart Supabase-project waarvan
+de gegevens rechtstreeks in de site-instellingen van Netlify staan, nooit in een lokaal `.env`
+(zie "Bouwen en deployen" hieronder).
+
 1. Maak een project aan op [supabase.com](https://supabase.com). Kies bij de geavanceerde
    instellingen: **"Automatically expose new tables" uit** (we regelen toegang zelf via
    expliciete `grant`-statements in `schema.sql`) en **"Enable automatic RLS" aan**.
@@ -66,8 +71,13 @@ npm run test         # test:unit + test:e2e
 ```
 
 `test:e2e` draait tegen een productie-build (`npm run build && npm run preview`) en heeft dus
-een werkend Supabase-project en ingevulde `.env` nodig. De test maakt een uniek
-`[e2e]`-gerecht aan en ruimt dat na afloop weer op.
+een werkend Supabase-project en ingevulde `.env` nodig — het lokale ontwikkel-/testproject uit
+stap 2, niet productie, dus de test-writes zijn veilig. De test maakt een uniek `[e2e]`-gerecht
+aan en ruimt dat na afloop weer op.
+
+Op GitHub draait dezelfde test suite automatisch bij elke push
+([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)), tegen hetzelfde soort apart
+ontwikkel-/testproject (via GitHub Actions secrets, niet productie).
 
 ## Bouwen en deployen
 
@@ -78,9 +88,10 @@ npm run preview   # lokaal de productie-build bekijken
 
 Het project gebruikt `@sveltejs/adapter-netlify` (geconfigureerd in `vite.config.ts`), met
 een `netlify.toml` die het build-commando en de publish-directory vastlegt. Koppel de
-GitHub-repo aan een nieuwe site op [Netlify](https://netlify.com), zet dezelfde vier
+GitHub-repo aan een nieuwe site op [Netlify](https://netlify.com), zet de vier
 omgevingsvariabelen (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `HOUSEHOLD_PASSCODE`,
-`SESSION_SECRET`) in de site-instellingen, en deploy.
+`SESSION_SECRET`) in de site-instellingen — met de gegevens van een **eigen productie-project**,
+niet het ontwikkel-/testproject uit stap 2 — en deploy.
 
 ## Installeren als app (Android/Chrome)
 
