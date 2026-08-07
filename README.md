@@ -76,10 +76,11 @@ npm run build
 npm run preview   # lokaal de productie-build bekijken
 ```
 
-Het project gebruikt `@sveltejs/adapter-auto`, dat zonder aanpassingen werkt op zowel
-[Vercel](https://vercel.com) als [Netlify](https://netlify.com): koppel de GitHub-repo,
-zet dezelfde vier omgevingsvariabelen (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
-`HOUSEHOLD_PASSCODE`, `SESSION_SECRET`) in de projectinstellingen, en deploy.
+Het project gebruikt `@sveltejs/adapter-netlify` (geconfigureerd in `vite.config.ts`), met
+een `netlify.toml` die het build-commando en de publish-directory vastlegt. Koppel de
+GitHub-repo aan een nieuwe site op [Netlify](https://netlify.com), zet dezelfde vier
+omgevingsvariabelen (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `HOUSEHOLD_PASSCODE`,
+`SESSION_SECRET`) in de site-instellingen, en deploy.
 
 ## Installeren als app (Android/Chrome)
 
