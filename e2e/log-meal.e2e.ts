@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const PASSCODE = process.env.HOUSEHOLD_PASSCODE ?? '';
 const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? '';
+const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY ?? '';
 
 const mealName = `[e2e] Testgerecht ${Date.now()}`;
 
@@ -10,8 +10,8 @@ async function deleteSeededMeal() {
 	await fetch(`${SUPABASE_URL}/rest/v1/meals?name=eq.${encodeURIComponent(mealName)}`, {
 		method: 'DELETE',
 		headers: {
-			apikey: SUPABASE_ANON_KEY,
-			Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+			apikey: SUPABASE_PUBLISHABLE_KEY,
+			Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
 			'x-household-passcode': PASSCODE
 		}
 	});

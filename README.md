@@ -41,7 +41,7 @@ cp .env.example .env
 
 Vul in `.env` in:
 
-- `SUPABASE_URL` en `SUPABASE_ANON_KEY` — Project Settings → API in het Supabase-dashboard.
+- `SUPABASE_URL` en `SUPABASE_PUBLISHABLE_KEY` — Project Settings → API in het Supabase-dashboard.
   Gebruik de **publishable key**, niet de secret key (die omzeilt Row Level Security).
 - `HOUSEHOLD_PASSCODE` — exact dezelfde toegangscode als in stap 2.
 - `SESSION_SECRET` — een willekeurige lange string, bijvoorbeeld met
@@ -78,7 +78,7 @@ npm run preview   # lokaal de productie-build bekijken
 
 Het project gebruikt `@sveltejs/adapter-auto`, dat zonder aanpassingen werkt op zowel
 [Vercel](https://vercel.com) als [Netlify](https://netlify.com): koppel de GitHub-repo,
-zet dezelfde vier omgevingsvariabelen (`SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+zet dezelfde vier omgevingsvariabelen (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
 `HOUSEHOLD_PASSCODE`, `SESSION_SECRET`) in de projectinstellingen, en deploy.
 
 ## Installeren als app (Android/Chrome)
