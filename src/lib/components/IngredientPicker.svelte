@@ -125,6 +125,7 @@
 
 	<input
 		type="text"
+		autocomplete="off"
 		bind:value={query}
 		oninput={onInput}
 		onkeydown={onKeydown}

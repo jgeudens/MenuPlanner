@@ -2,6 +2,10 @@
 -- Run this once, in full, in the Supabase SQL editor (Project → SQL Editor → New query).
 -- Before running: replace 'REPLACE_WITH_YOUR_PASSCODE' below with your own household
 -- passcode. This same value must also be set as HOUSEHOLD_PASSCODE in the app's .env.
+--
+-- To update an existing database's functions/triggers later (e.g. after a function
+-- body changes), don't re-run this whole file — use functions.sql instead, which is
+-- safe to re-run anytime.
 
 create extension if not exists pgcrypto;
 
@@ -119,8 +123,9 @@ $$;
 
 -- Create a meal together with its ingredients in one atomic call (PostgREST
 -- can't run a client-side multi-table transaction, so this does it server
--- side). Ingredient names are upserted case-insensitively against the
--- ingredients_name_lower_idx unique index, creating new ones as needed.
+-- side). Ingredient names are trimmed and lowercased, then upserted
+-- case-insensitively against the ingredients_name_lower_idx unique index,
+-- creating new ones as needed.
 -- security invoker: runs as the calling (anon) role, so the RLS policies
 -- above are still enforced on every insert this function performs.
 create or replace function create_meal(
@@ -145,7 +150,7 @@ begin
 
 	foreach v_ingredient_name in array p_ingredient_names loop
 		insert into ingredients (name)
-		values (trim(v_ingredient_name))
+		values (lower(trim(v_ingredient_name)))
 		on conflict (lower(name)) do update set name = ingredients.name
 		returning * into v_ingredient;
 
@@ -193,7 +198,7 @@ begin
 
 	foreach v_ingredient_name in array p_ingredient_names loop
 		insert into ingredients (name)
-		values (trim(v_ingredient_name))
+		values (lower(trim(v_ingredient_name)))
 		on conflict (lower(name)) do update set name = ingredients.name
 		returning * into v_ingredient;
 
