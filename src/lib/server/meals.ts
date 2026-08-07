@@ -1,5 +1,10 @@
 import { supabase } from './supabase';
-import type { MealFormInput, MealStatsSource, MealWithIngredients } from '$lib/types';
+import type {
+	MealFormInput,
+	MealStatsSource,
+	MealSuggestion,
+	MealWithIngredients
+} from '$lib/types';
 
 const MEAL_WITH_INGREDIENTS_SELECT =
 	'id, name, date, rating, notes, meal_ingredients(ingredients(id, name))';
@@ -104,6 +109,37 @@ export async function searchMealsByIngredients(
 
 	if (error) throw error;
 	return (data as unknown as MealRow[]).map(mapMealRow);
+}
+
+export async function searchMealNameSuggestions(
+	query: string,
+	limit = 10
+): Promise<MealSuggestion[]> {
+	const trimmed = query.trim();
+	if (!trimmed) return [];
+
+	const { data, error } = await supabase
+		.from('meals')
+		.select(MEAL_WITH_INGREDIENTS_SELECT)
+		.ilike('name', `${trimmed}%`)
+		.order('date', { ascending: false })
+		.order('created_at', { ascending: false })
+		.limit(limit * 3);
+
+	if (error) throw error;
+
+	const seen = new Set<string>();
+	const suggestions: MealSuggestion[] = [];
+	for (const row of data as unknown as MealRow[]) {
+		const key = row.name.toLowerCase();
+		if (seen.has(key)) continue;
+		seen.add(key);
+
+		const { name, rating, notes, ingredients } = mapMealRow(row);
+		suggestions.push({ name, rating, notes, ingredients });
+		if (suggestions.length >= limit) break;
+	}
+	return suggestions;
 }
 
 export async function getAllMealsForStats(): Promise<MealStatsSource[]> {

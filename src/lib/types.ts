@@ -24,6 +24,8 @@ export type MealFormInput = {
 	ingredientNames: string[];
 };
 
+export type MealSuggestion = Pick<MealWithIngredients, 'name' | 'rating' | 'notes' | 'ingredients'>;
+
 export type MealStatsSource = {
 	id: string;
 	name: string;

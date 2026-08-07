@@ -2,19 +2,31 @@
 	import { untrack } from 'svelte';
 	import { resolve } from '$app/paths';
 	import type { ActionData } from './$types';
+	import type { MealSuggestion } from '$lib/types';
 	import FormField from '$lib/components/FormField.svelte';
 	import IngredientPicker from '$lib/components/IngredientPicker.svelte';
+	import MealNameInput from '$lib/components/MealNameInput.svelte';
 	import RatingInput from '$lib/components/RatingInput.svelte';
 	import { todayIso } from '$lib/utils';
 
 	let { form }: { form: ActionData } = $props();
 
-	let rating = $state(0);
 	// Only ever read once: this component remounts on every full-page form
 	// submission (no use:enhance), so the initial value is always current.
-	let selectedIngredients = $state(
+	let name = $state(untrack(() => form?.values?.name ?? ''));
+	let rating = $state(0);
+	let notes = $state(untrack(() => form?.values?.notes ?? ''));
+	let selectedIngredients = $state<{ id: string | null; name: string }[]>(
 		untrack(() => (form?.values?.ingredientNames ?? []).map((name: string) => ({ id: null, name })))
 	);
+
+	// Picking a suggested (previously logged) name repeats that dish: fills
+	// ingredients/rating/notes from its most recent log. Date is left alone.
+	function applySuggestion(suggestion: MealSuggestion) {
+		rating = suggestion.rating;
+		notes = suggestion.notes ?? '';
+		selectedIngredients = suggestion.ingredients.map((i) => ({ id: i.id, name: i.name }));
+	}
 </script>
 
 <svelte:head>
@@ -25,14 +37,7 @@
 
 <form method="POST" class="space-y-5">
 	<FormField label="Naam" id="name" error={form?.errors?.name}>
-		<input
-			id="name"
-			name="name"
-			type="text"
-			required
-			value={form?.values?.name ?? ''}
-			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
-		/>
+		<MealNameInput id="name" name="name" required bind:value={name} onSelect={applySuggestion} />
 	</FormField>
 
 	<FormField label="Datum" id="date" error={form?.errors?.date}>
@@ -59,7 +64,7 @@
 			id="notes"
 			name="notes"
 			rows="3"
-			value={form?.values?.notes ?? ''}
+			bind:value={notes}
 			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
 		></textarea>
 	</FormField>

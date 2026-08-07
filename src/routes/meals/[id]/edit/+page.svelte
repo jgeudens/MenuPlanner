@@ -4,10 +4,12 @@
 	import type { PageProps } from './$types';
 	import FormField from '$lib/components/FormField.svelte';
 	import IngredientPicker from '$lib/components/IngredientPicker.svelte';
+	import MealNameInput from '$lib/components/MealNameInput.svelte';
 	import RatingInput from '$lib/components/RatingInput.svelte';
 
 	let { data, form }: PageProps = $props();
 
+	let name = $state(untrack(() => form?.values?.name ?? data.meal.name));
 	let rating = $state(untrack(() => Number(form?.values?.rating) || data.meal.rating));
 	let selectedIngredients = $state(
 		untrack(() =>
@@ -32,14 +34,7 @@
 
 <form method="POST" action="?/update" class="space-y-5">
 	<FormField label="Naam" id="name" error={form?.errors?.name}>
-		<input
-			id="name"
-			name="name"
-			type="text"
-			required
-			value={form?.values?.name ?? data.meal.name}
-			class="w-full rounded-md border border-gray-300 px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
-		/>
+		<MealNameInput id="name" name="name" required bind:value={name} />
 	</FormField>
 
 	<FormField label="Datum" id="date" error={form?.errors?.date}>
