@@ -38,6 +38,14 @@ de gegevens rechtstreeks in de site-instellingen van Netlify staan, nooit in een
    eigen toegangscode (verzin zelf iets — dit hoeft geen Supabase-waarde te zijn).
 3. Voer het script uit.
 
+Wijzig je later een functie of trigger in `schema.sql` (bijvoorbeeld `create_meal` of
+`update_meal`), dan hoef je niet opnieuw het hele script te draaien — dat zou fouten geven
+omdat tabellen, policies en de `app_config`-rij al bestaan. Werk in plaats daarvan de
+bijbehorende functie bij in [`functions.sql`](./functions.sql) en plak alleen dat bestand in de
+SQL Editor. `functions.sql` bevat enkel `create or replace function`/`trigger`- en
+`grant`-statements, dus is altijd veilig om opnieuw te draaien, op elk moment, in elke
+omgeving (ontwikkel-/testproject én productie apart).
+
 ### 3. Omgevingsvariabelen
 
 ```sh

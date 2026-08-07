@@ -56,6 +56,15 @@ _all_ given ingredients, via `having count(...) = cardinality(...)`). RLS polici
 change table shapes or add RPCs, `schema.sql` must be updated and re-run by hand in the Supabase
 SQL editor; there is no migration tooling.
 
+**`functions.sql` is a hand-maintained, always-rerunnable subset of `schema.sql`.** It holds
+copies of every `create or replace function`/`trigger` and their `grant execute` statements —
+nothing that errors on a database that's already set up (no `create table`, no `insert into
+app_config`, no bare `create policy`/`create trigger`). `schema.sql` remains the source of truth
+and is only ever run in full once, against a brand-new Supabase project. When a function body in
+`schema.sql` changes (e.g. `create_meal`, `update_meal`), make the same edit in `functions.sql`
+and paste _that_ file into the SQL editor to push the update to an existing database — dev/CI
+and prod are separate Supabase projects, so run it against each one that needs the change.
+
 **Deploy target is Netlify**, via `@sveltejs/adapter-netlify` configured explicitly in
 `vite.config.ts` (not `adapter-auto`) with `netlify.toml` setting the build command and `build`
 publish directory. Four env vars are required at runtime and at e2e-test time: `SUPABASE_URL`,
