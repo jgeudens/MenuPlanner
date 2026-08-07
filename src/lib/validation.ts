@@ -55,3 +55,14 @@ export function validateMealForm(raw: MealFormRawInput): MealFormValidationResul
 		}
 	};
 }
+
+export type IngredientNameValidationResult =
+	{ valid: true; data: string } | { valid: false; error: string };
+
+export function validateIngredientName(raw: string): IngredientNameValidationResult {
+	const name = raw.trim();
+	if (!name) {
+		return { valid: false, error: 'Vul een naam voor het ingrediënt in.' };
+	}
+	return { valid: true, data: name };
+}

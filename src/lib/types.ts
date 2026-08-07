@@ -3,6 +3,11 @@ export type Ingredient = {
 	name: string;
 };
 
+export type IngredientWithUsage = Ingredient & {
+	/** Number of meals that use this ingredient. */
+	mealCount: number;
+};
+
 export type Meal = {
 	id: string;
 	name: string;

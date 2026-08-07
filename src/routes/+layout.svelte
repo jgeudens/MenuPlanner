@@ -10,7 +10,9 @@
 	const toastMessages: Record<string, { message: string; kind: 'success' | 'error' }> = {
 		'meal-saved': { message: 'Gerecht opgeslagen.', kind: 'success' },
 		'meal-updated': { message: 'Gerecht bijgewerkt.', kind: 'success' },
-		'meal-deleted': { message: 'Gerecht verwijderd.', kind: 'success' }
+		'meal-deleted': { message: 'Gerecht verwijderd.', kind: 'success' },
+		'ingredient-renamed': { message: 'Ingrediënt bijgewerkt.', kind: 'success' },
+		'ingredient-merged': { message: 'Ingrediënten samengevoegd.', kind: 'success' }
 	};
 
 	// afterNavigate (rather than a top-level $effect) waits until the router
