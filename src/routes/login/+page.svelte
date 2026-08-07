@@ -5,11 +5,11 @@
 </script>
 
 <svelte:head>
-	<title>Inloggen — Pantry Log</title>
+	<title>Inloggen — MenuPlanner</title>
 </svelte:head>
 
 <div class="mx-auto mt-16 max-w-sm">
-	<h1 class="mb-6 text-center text-2xl font-semibold text-gray-900">Pantry Log</h1>
+	<h1 class="mb-6 text-center text-2xl font-semibold text-gray-900">MenuPlanner</h1>
 	<form
 		method="POST"
 		action="?/login"

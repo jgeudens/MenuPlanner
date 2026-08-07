@@ -16,7 +16,7 @@
 
 <header class="bg-primary-700 text-white">
 	<div class="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
-		<a href={resolve('/')} class="text-lg font-semibold tracking-tight">Pantry Log</a>
+		<a href={resolve('/')} class="text-lg font-semibold tracking-tight">MenuPlanner</a>
 		<nav class="flex items-center gap-1">
 			{#each links as link (link.href)}
 				<a

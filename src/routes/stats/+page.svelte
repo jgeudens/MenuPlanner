@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Statistieken — Pantry Log</title>
+	<title>Statistieken — MenuPlanner</title>
 </svelte:head>
 
 <h1 class="mb-6 text-xl font-semibold text-gray-900">Statistieken</h1>

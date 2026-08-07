@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.meal.name} bewerken — Pantry Log</title>
+	<title>{data.meal.name} bewerken — MenuPlanner</title>
 </svelte:head>
 
 <h1 class="mb-6 text-xl font-semibold text-gray-900">Gerecht bewerken</h1>

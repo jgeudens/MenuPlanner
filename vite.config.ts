@@ -22,8 +22,8 @@ export default defineConfig({
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
 			manifest: {
-				name: 'Pantry Log',
-				short_name: 'Pantry Log',
+				name: 'MenuPlanner',
+				short_name: 'MenuPlanner',
 				description: 'Een privélogboek van gerechten die je echt hebt gekookt.',
 				lang: 'nl',
 				theme_color: '#1d4ed8',
@@ -47,7 +47,7 @@ export default defineConfig({
 					{
 						urlPattern: ({ request }) => request.mode === 'navigate',
 						handler: 'NetworkFirst',
-						options: { cacheName: 'pantry-log-pages', networkTimeoutSeconds: 3 }
+						options: { cacheName: 'menuplanner-pages', networkTimeoutSeconds: 3 }
 					}
 				]
 			}

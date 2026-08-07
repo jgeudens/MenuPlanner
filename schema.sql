@@ -1,4 +1,4 @@
--- Pantry Log database schema
+-- MenuPlanner database schema
 -- Run this once, in full, in the Supabase SQL editor (Project → SQL Editor → New query).
 -- Before running: replace 'REPLACE_WITH_YOUR_PASSCODE' below with your own household
 -- passcode. This same value must also be set as HOUSEHOLD_PASSCODE in the app's .env.

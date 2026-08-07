@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>Zoeken — Pantry Log</title>
+	<title>Zoeken — MenuPlanner</title>
 </svelte:head>
 
 <h1 class="mb-6 text-xl font-semibold text-gray-900">Zoeken op ingrediënt</h1>

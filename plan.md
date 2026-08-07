@@ -1,4 +1,4 @@
-# Pantry Log — Application Overview
+# MenuPlanner — Application Overview
 
 ## What it is
 

@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { HOUSEHOLD_PASSCODE, SESSION_SECRET } from '$env/static/private';
 
-export const SESSION_COOKIE_NAME = 'pantry_session';
+export const SESSION_COOKIE_NAME = 'menuplanner_session';
 
 export function computeSessionDigest(passcode: string, secret: string): string {
 	return createHmac('sha256', secret).update(passcode).digest('hex');

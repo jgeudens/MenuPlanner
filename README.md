@@ -1,4 +1,4 @@
-# Pantry Log
+# MenuPlanner
 
 Een privélogboek van gerechten die je echt hebt gekookt — geen receptenbeheer, geen
 voedingstracker. Log wat je hebt gemaakt, blader terug door je geschiedenis, en zoek op
