@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>Overzicht — MenuPlanner</title>
+	<title>Overzicht - MenuPlanner</title>
 </svelte:head>
 
 <h1 class="sr-only">Overzicht</h1>

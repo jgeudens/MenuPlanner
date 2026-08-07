@@ -1,15 +1,43 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { ActionData } from './$types';
 
 	let { form }: { form: ActionData } = $props();
+
+	let contactCanvas: HTMLCanvasElement;
+
+	onMount(() => {
+		const ctx = contactCanvas.getContext('2d');
+		if (!ctx) return;
+
+		const dpr = window.devicePixelRatio || 1;
+		const width = 130;
+		const height = 16;
+		contactCanvas.width = width * dpr;
+		contactCanvas.height = height * dpr;
+		contactCanvas.style.width = `${width}px`;
+		contactCanvas.style.height = `${height}px`;
+		ctx.scale(dpr, dpr);
+		ctx.font = '600 12px system-ui, sans-serif';
+		ctx.fillStyle = '#6b7280';
+		ctx.textBaseline = 'middle';
+		// Rendered on canvas, not present in the DOM, to keep this out of scrapers' reach.
+		ctx.fillText('info@synvis.net', 0, height / 2 + 1);
+	});
 </script>
 
 <svelte:head>
-	<title>Inloggen — MenuPlanner</title>
+	<title>Inloggen - MenuPlanner</title>
 </svelte:head>
 
 <div class="mx-auto mt-16 max-w-sm">
-	<h1 class="mb-6 text-center text-2xl font-semibold text-gray-900">MenuPlanner</h1>
+	<h1 class="mb-2 text-center text-2xl font-semibold text-gray-900">MenuPlanner</h1>
+	<p class="mb-6 text-center text-sm text-gray-500">
+		A private log of dishes you've actually cooked, not a recipe manager and not a nutrition
+		tracker. Log what you made, look back through your history, and search by ingredient when you're
+		not sure what to cook tonight. No clutter, just some people sharing a kitchen and one shared
+		passcode to get in.
+	</p>
 	<form
 		method="POST"
 		action="?/login"
@@ -38,4 +66,8 @@
 			Inloggen
 		</button>
 	</form>
+	<p class="mt-8 flex flex-col items-center gap-1 text-center text-xs text-gray-400">
+		<span>If you're interested, you can contact me at</span>
+		<canvas bind:this={contactCanvas} aria-hidden="true"></canvas>
+	</p>
 </div>

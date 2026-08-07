@@ -6,13 +6,13 @@
 </script>
 
 <svelte:head>
-	<title>Statistieken — MenuPlanner</title>
+	<title>Statistieken - MenuPlanner</title>
 </svelte:head>
 
 <h1 class="mb-6 text-xl font-semibold text-gray-900">Statistieken</h1>
 
 {#if data.totalMeals === 0}
-	<p class="text-gray-600">Nog geen gegevens — log eerst een paar gerechten.</p>
+	<p class="text-gray-600">Nog geen gegevens. Log eerst een paar gerechten.</p>
 {:else}
 	<div class="mb-6 grid grid-cols-2 gap-4">
 		<div class="rounded-lg border border-gray-200 bg-white p-4">

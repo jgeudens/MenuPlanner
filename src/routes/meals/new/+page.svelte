@@ -30,7 +30,7 @@
 </script>
 
 <svelte:head>
-	<title>Nieuw gerecht — MenuPlanner</title>
+	<title>Nieuw gerecht - MenuPlanner</title>
 </svelte:head>
 
 <h1 class="mb-6 text-xl font-semibold text-gray-900">Nieuw gerecht loggen</h1>
