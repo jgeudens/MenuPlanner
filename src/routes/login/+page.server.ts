@@ -39,10 +39,5 @@ export const actions: Actions = {
 		});
 
 		redirect(303, '/');
-	},
-
-	logout: async ({ cookies }) => {
-		cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
-		redirect(303, '/login');
 	}
 };

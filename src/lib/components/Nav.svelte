@@ -57,14 +57,6 @@
 			>
 				Beheer
 			</a>
-			<form method="POST" action="/login?/logout">
-				<button
-					type="submit"
-					class="rounded-md px-3 py-1.5 text-sm font-medium text-primary-100 hover:bg-primary-600 hover:text-white focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 focus-visible:outline-none"
-				>
-					Uitloggen
-				</button>
-			</form>
 		</nav>
 
 		<!-- Mobile hamburger toggle (below md) -->
@@ -133,14 +125,6 @@
 				>
 					Beheer
 				</a>
-				<form method="POST" action="/login?/logout">
-					<button
-						type="submit"
-						class="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-primary-100 hover:bg-primary-600 hover:text-white focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700 focus-visible:outline-none"
-					>
-						Uitloggen
-					</button>
-				</form>
 			</div>
 		</nav>
 	{/if}
