@@ -42,6 +42,7 @@
 {:else}
 	<input
 		type="search"
+		autocomplete="off"
 		placeholder="Filter ingrediënten…"
 		aria-label="Filter ingrediënten"
 		bind:value={filter}
@@ -60,6 +61,7 @@
 					<input type="hidden" name="id" value={ingredient.id} />
 					<input
 						name="name"
+						autocomplete="off"
 						value={ingredient.name}
 						required
 						aria-label={`Naam voor ${ingredient.name}`}
