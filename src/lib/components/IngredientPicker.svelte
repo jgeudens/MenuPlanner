@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 
 	type Selected = { id: string | null; name: string };
 	type Suggestion = { id: string; name: string };
@@ -19,6 +19,7 @@
 	let query = $state('');
 	let suggestions = $state<Suggestion[]>([]);
 	let open = $state(false);
+	let inputEl: HTMLInputElement | undefined = $state();
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let blurTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -57,7 +58,7 @@
 		debounceTimer = setTimeout(() => fetchSuggestions(query), 200);
 	}
 
-	function addSelection(item: Selected) {
+	async function addSelection(item: Selected) {
 		clearTimeout(blurTimer);
 		if (!isAlreadySelected(item.name)) {
 			selected = [...selected, item];
@@ -65,6 +66,8 @@
 		query = '';
 		suggestions = [];
 		open = false;
+		await tick();
+		inputEl?.focus();
 	}
 
 	function addNew() {
@@ -124,6 +127,7 @@
 	</div>
 
 	<input
+		bind:this={inputEl}
 		type="text"
 		autocomplete="off"
 		bind:value={query}
