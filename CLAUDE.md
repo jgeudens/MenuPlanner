@@ -95,3 +95,6 @@ ignore.
 - `src/lib/*.ts` (stats, validation, utils) is pure, framework-free logic with colocated
   `*.test.ts` files — keep DB/Supabase concerns out of these.
 - Types shared between server and UI live in `src/lib/types.ts`.
+- After any user-facing or structural change (feature, UI/UX change, schema/RPC
+  change, bug fix), add a dated entry to `journal.md` — newest entry on top, max 3
+  sentences. Skip tooling-only changes (CI, dependency bumps, lint/format config).
