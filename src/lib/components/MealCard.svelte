@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import RatingStars from './RatingStars.svelte';
 	import { formatDateNl } from '$lib/utils';
 	import type { MealWithIngredients } from '$lib/types';
@@ -7,10 +8,7 @@
 	let { meal }: { meal: MealWithIngredients } = $props();
 </script>
 
-<a
-	href={resolve('/meals/[id]/edit', { id: meal.id })}
-	class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-primary-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
->
+{#snippet content()}
 	<div class="flex items-start justify-between gap-3">
 		<div>
 			<h3 class="font-semibold text-gray-900">{meal.name}</h3>
@@ -27,4 +25,20 @@
 			{/each}
 		</div>
 	{/if}
-</a>
+	{#if page.data.readOnly && meal.notes}
+		<p class="mt-3 text-sm whitespace-pre-line text-gray-600">{meal.notes}</p>
+	{/if}
+{/snippet}
+
+{#if page.data.readOnly}
+	<div class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+		{@render content()}
+	</div>
+{:else}
+	<a
+		href={resolve('/meals/[id]/edit', { id: meal.id })}
+		class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-primary-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
+	>
+		{@render content()}
+	</a>
+{/if}

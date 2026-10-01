@@ -1,7 +1,9 @@
 -- MenuPlanner database schema
 -- Run this once, in full, in the Supabase SQL editor (Project → SQL Editor → New query).
 -- Before running: replace 'REPLACE_WITH_YOUR_PASSCODE' below with your own household
--- passcode. This same value must also be set as HOUSEHOLD_PASSCODE in the app's .env.
+-- passcode, and 'REPLACE_WITH_YOUR_READONLY_PASSCODE' with a different passcode for
+-- read-only access. These must also be set as HOUSEHOLD_PASSCODE and READONLY_PASSCODE
+-- in the app's .env.
 --
 -- To update an existing database's functions/triggers later (e.g. after a function
 -- body changes), don't re-run this whole file — use functions.sql instead, which is
@@ -15,9 +17,12 @@ create extension if not exists pgcrypto;
 create table app_config (
 	id boolean primary key default true,
 	passcode text not null,
+	-- Optional second passcode that grants read-only access (select only).
+	readonly_passcode text,
 	constraint app_config_singleton check (id)
 );
-insert into app_config (id, passcode) values (true, 'REPLACE_WITH_YOUR_PASSCODE');
+insert into app_config (id, passcode, readonly_passcode)
+values (true, 'REPLACE_WITH_YOUR_PASSCODE', 'REPLACE_WITH_YOUR_READONLY_PASSCODE');
 
 create or replace function check_household_passcode(input text)
 returns boolean
@@ -27,6 +32,19 @@ security definer
 set search_path = public
 as $$
 	select exists (select 1 from app_config where passcode = input);
+$$;
+
+create or replace function check_household_readonly_passcode(input text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+	select exists (
+		select 1 from app_config
+		where readonly_passcode is not null and readonly_passcode <> '' and readonly_passcode = input
+	);
 $$;
 
 -- Core tables
@@ -74,36 +92,61 @@ for each row execute function set_updated_at();
 -- Gated by a shared household passcode sent as the `x-household-passcode`
 -- request header (set as a static header on the server-side Supabase client,
 -- see src/lib/server/supabase.ts). There is no per-user auth — this is a
--- 2-person trusted household app.
+-- 2-person trusted household app. A second, read-only passcode may select but
+-- never insert, update or delete.
 
 alter table app_config enable row level security;
 alter table meals enable row level security;
 alter table ingredients enable row level security;
 alter table meal_ingredients enable row level security;
 
-create policy "household access" on meals for all
+create policy "household read" on meals for select
 using (
 	check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
-)
-with check (
-	check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
+	or check_household_readonly_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
 );
 
-create policy "household access" on ingredients for all
+create policy "household insert" on meals for insert
+with check (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household update" on meals for update
+using (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'))
+with check (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household delete" on meals for delete
+using (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household read" on ingredients for select
 using (
 	check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
-)
-with check (
-	check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
+	or check_household_readonly_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
 );
 
-create policy "household access" on meal_ingredients for all
+create policy "household insert" on ingredients for insert
+with check (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household update" on ingredients for update
+using (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'))
+with check (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household delete" on ingredients for delete
+using (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household read" on meal_ingredients for select
 using (
 	check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
-)
-with check (
-	check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
+	or check_household_readonly_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode')
 );
+
+create policy "household insert" on meal_ingredients for insert
+with check (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household update" on meal_ingredients for update
+using (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'))
+with check (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
+
+create policy "household delete" on meal_ingredients for delete
+using (check_household_passcode(current_setting('request.headers', true)::json ->> 'x-household-passcode'));
 
 -- AND-logic ingredient search: returns meals that contain ALL given ingredients.
 create or replace function search_meals_by_ingredients(ingredient_ids uuid[])
@@ -263,6 +306,7 @@ $$;
 grant usage on schema public to anon;
 grant select, insert, update, delete on meals, ingredients, meal_ingredients to anon;
 grant execute on function check_household_passcode(text) to anon;
+grant execute on function check_household_readonly_passcode(text) to anon;
 grant execute on function search_meals_by_ingredients(uuid[]) to anon;
 grant execute on function create_meal(text, date, smallint, text, text[]) to anon;
 grant execute on function update_meal(uuid, text, date, smallint, text, text[]) to anon;

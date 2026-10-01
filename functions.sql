@@ -22,6 +22,19 @@ as $$
 	select exists (select 1 from app_config where passcode = input);
 $$;
 
+create or replace function check_household_readonly_passcode(input text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+	select exists (
+		select 1 from app_config
+		where readonly_passcode is not null and readonly_passcode <> '' and readonly_passcode = input
+	);
+$$;
+
 create or replace function set_updated_at()
 returns trigger
 language plpgsql
@@ -189,6 +202,7 @@ $$;
 
 -- Explicit grants (re-granting an already-granted privilege is a no-op, not an error).
 grant execute on function check_household_passcode(text) to anon;
+grant execute on function check_household_readonly_passcode(text) to anon;
 grant execute on function search_meals_by_ingredients(uuid[]) to anon;
 grant execute on function create_meal(text, date, smallint, text, text[]) to anon;
 grant execute on function update_meal(uuid, text, date, smallint, text, text[]) to anon;

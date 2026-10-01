@@ -8,8 +8,8 @@ import {
 	computeTotalMeals
 } from '$lib/stats';
 
-export const load: PageServerLoad = async () => {
-	const meals = await getAllMealsForStats();
+export const load: PageServerLoad = async ({ locals }) => {
+	const meals = await getAllMealsForStats(locals.db);
 
 	return {
 		totalMeals: computeTotalMeals(meals),

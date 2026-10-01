@@ -45,6 +45,14 @@ is also sent as an `x-household-passcode` header on every Supabase request
 (`src/lib/server/supabase.ts`) and enforced again at the database layer via RLS — so auth is
 effectively checked twice, once at the app layer and once at the DB layer.
 
+**Read-only mode** uses a second passcode (`READONLY_PASSCODE`, stored as
+`app_config.readonly_passcode`). `hooks.server.ts` resolves the cookie to a role, sets
+`locals.readOnly` and `locals.db` (a Supabase client sending the matching passcode header,
+`getDb` in `supabase.ts`), 403s non-GET requests and redirects the write pages. RLS allows
+select for both passcodes but insert/update/delete only for the read-write one. Server
+data functions take `db` as first argument; always pass `locals.db`. Existing databases need
+`readonly-migration.sql` run once.
+
 **Database logic lives in `schema.sql`, not just the app.** Multi-table writes (creating/editing
 a meal plus its ingredient list) are done via `security invoker` Postgres RPCs
 (`create_meal`, `update_meal`, `search_meals_by_ingredients`) because PostgREST can't do a
@@ -67,15 +75,15 @@ and prod are separate Supabase projects, so run it against each one that needs t
 
 **Deploy target is Netlify**, via `@sveltejs/adapter-netlify` configured explicitly in
 `vite.config.ts` (not `adapter-auto`) with `netlify.toml` setting the build command and `build`
-publish directory. Four env vars are required at runtime and at e2e-test time: `SUPABASE_URL`,
+publish directory. Five env vars are required at runtime and at e2e-test time: `SUPABASE_URL`,
 `SUPABASE_PUBLISHABLE_KEY` (never the secret key — it bypasses RLS), `HOUSEHOLD_PASSCODE`,
-`SESSION_SECRET`.
+`READONLY_PASSCODE`, `SESSION_SECRET`.
 
 **A second Supabase project is used for everything except production** — local `npm run dev`,
 local `npm run test:e2e`, and CI all point at one dedicated non-prod project (same `schema.sql`,
 run by hand there too, the same manual way as prod — see README "Supabase-project opzetten").
 Production's credentials live only in Netlify's site settings. CI's credentials live in GitHub
-Actions secrets `CI_SUPABASE_URL`, `CI_SUPABASE_PUBLISHABLE_KEY`, `CI_HOUSEHOLD_PASSCODE`,
+Actions secrets `CI_SUPABASE_URL`, `CI_SUPABASE_PUBLISHABLE_KEY`, `CI_HOUSEHOLD_PASSCODE`, `CI_READONLY_PASSCODE`,
 `CI_SESSION_SECRET` (`.github/workflows/ci.yml` maps them to the unprefixed env var names
 above). All four CI jobs need them, not just the e2e job: `npm ci` runs the `prepare` script
 (`svelte-kit sync`), which regenerates `.svelte-kit/ambient.d.ts` from whatever env vars are

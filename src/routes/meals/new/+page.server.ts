@@ -4,7 +4,7 @@ import { validateMealForm } from '$lib/validation';
 import { createMeal } from '$lib/server/meals';
 
 export const actions: Actions = {
-	default: async ({ request }) => {
+	default: async ({ request, locals }) => {
 		const data = await request.formData();
 
 		const raw = {
@@ -21,7 +21,7 @@ export const actions: Actions = {
 			return fail(400, { errors: result.errors, values: raw });
 		}
 
-		await createMeal(result.data);
+		await createMeal(locals.db, result.data);
 		redirect(303, '/?toast=meal-saved');
 	}
 };

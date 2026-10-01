@@ -1,11 +1,11 @@
-import { supabase } from './supabase';
+import type { Db } from './supabase';
 import type { Ingredient, IngredientWithUsage } from '$lib/types';
 
-export async function searchIngredients(query: string, limit = 10): Promise<Ingredient[]> {
+export async function searchIngredients(db: Db, query: string, limit = 10): Promise<Ingredient[]> {
 	const trimmed = query.trim();
 	if (!trimmed) return [];
 
-	const { data, error } = await supabase
+	const { data, error } = await db
 		.from('ingredients')
 		.select('id, name')
 		.ilike('name', `${trimmed}%`)
@@ -16,10 +16,10 @@ export async function searchIngredients(query: string, limit = 10): Promise<Ingr
 	return data ?? [];
 }
 
-export async function getIngredientsByIds(ids: string[]): Promise<Ingredient[]> {
+export async function getIngredientsByIds(db: Db, ids: string[]): Promise<Ingredient[]> {
 	if (ids.length === 0) return [];
 
-	const { data, error } = await supabase.from('ingredients').select('id, name').in('id', ids);
+	const { data, error } = await db.from('ingredients').select('id, name').in('id', ids);
 	if (error) throw error;
 	return data ?? [];
 }
@@ -30,8 +30,8 @@ type IngredientUsageRow = {
 	meal_ingredients: { count: number }[];
 };
 
-export async function listIngredients(): Promise<IngredientWithUsage[]> {
-	const { data, error } = await supabase
+export async function listIngredients(db: Db): Promise<IngredientWithUsage[]> {
+	const { data, error } = await db
 		.from('ingredients')
 		.select('id, name, meal_ingredients(count)')
 		.order('name');
@@ -46,8 +46,8 @@ export async function listIngredients(): Promise<IngredientWithUsage[]> {
 
 /** Renames an ingredient, merging into an existing one on name collision. Returns
  * true when a merge happened, false for a plain rename. */
-export async function renameIngredient(id: string, newName: string): Promise<boolean> {
-	const { data, error } = await supabase.rpc('rename_ingredient', {
+export async function renameIngredient(db: Db, id: string, newName: string): Promise<boolean> {
+	const { data, error } = await db.rpc('rename_ingredient', {
 		p_ingredient_id: id,
 		p_new_name: newName
 	});

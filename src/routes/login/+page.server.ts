@@ -1,7 +1,7 @@
 import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { SESSION_COOKIE_NAME, verifyPasscode, createSessionCookieValue } from '$lib/server/auth';
+import { SESSION_COOKIE_NAME, resolveRole, createSessionCookieValue } from '$lib/server/auth';
 import {
 	checkLoginRateLimit,
 	recordLoginFailure,
@@ -23,14 +23,16 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const passcode = String(data.get('passcode') ?? '').trim();
 
-		if (!passcode || !verifyPasscode(passcode)) {
+		const role = passcode ? resolveRole(passcode) : null;
+
+		if (!role) {
 			recordLoginFailure(ip);
 			return fail(400, { error: 'Onjuiste toegangscode.' });
 		}
 
 		recordLoginSuccess(ip);
 
-		cookies.set(SESSION_COOKIE_NAME, createSessionCookieValue(), {
+		cookies.set(SESSION_COOKIE_NAME, createSessionCookieValue(role), {
 			path: '/',
 			httpOnly: true,
 			secure: !dev,

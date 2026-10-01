@@ -3,14 +3,14 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { validateMealForm } from '$lib/validation';
 import { getMeal, updateMeal, deleteMeal } from '$lib/server/meals';
 
-export const load: PageServerLoad = async ({ params }) => {
-	const meal = await getMeal(params.id);
+export const load: PageServerLoad = async ({ params, locals }) => {
+	const meal = await getMeal(locals.db, params.id);
 	if (!meal) error(404, 'Gerecht niet gevonden.');
 	return { meal };
 };
 
 export const actions: Actions = {
-	update: async ({ request, params }) => {
+	update: async ({ request, params, locals }) => {
 		const data = await request.formData();
 
 		const raw = {
@@ -27,12 +27,12 @@ export const actions: Actions = {
 			return fail(400, { errors: result.errors, values: raw });
 		}
 
-		await updateMeal(params.id, result.data);
+		await updateMeal(locals.db, params.id, result.data);
 		redirect(303, '/?toast=meal-updated');
 	},
 
-	delete: async ({ params }) => {
-		await deleteMeal(params.id);
+	delete: async ({ params, locals }) => {
+		await deleteMeal(locals.db, params.id);
 		redirect(303, '/?toast=meal-deleted');
 	}
 };

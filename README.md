@@ -46,6 +46,10 @@ SQL Editor. `functions.sql` bevat enkel `create or replace function`/`trigger`- 
 `grant`-statements, dus is altijd veilig om opnieuw te draaien, op elk moment, in elke
 omgeving (ontwikkel-/testproject én productie apart).
 
+Heb je al een bestaande database van vóór de alleen-lezen modus? Draai dan eenmalig
+[`readonly-migration.sql`](./readonly-migration.sql) in de SQL Editor (vul eerst de gewenste
+alleen-lezen toegangscode in), in elk project apart.
+
 ### 3. Omgevingsvariabelen
 
 ```sh
@@ -57,6 +61,9 @@ Vul in `.env` in:
 - `SUPABASE_URL` en `SUPABASE_PUBLISHABLE_KEY` — Project Settings → API in het Supabase-dashboard.
   Gebruik de **publishable key**, niet de secret key (die omzeilt Row Level Security).
 - `HOUSEHOLD_PASSCODE` — exact dezelfde toegangscode als in stap 2.
+- `READONLY_PASSCODE` — de toegangscode voor alleen-lezen toegang (andere waarde dan
+  `HOUSEHOLD_PASSCODE`), exact gelijk aan `readonly_passcode` in `app_config`. Wie hiermee
+  inlogt kan alles bekijken, maar niets toevoegen, wijzigen of verwijderen.
 - `SESSION_SECRET` — een willekeurige lange string, bijvoorbeeld met
   `openssl rand -hex 32`.
 
@@ -96,9 +103,9 @@ npm run preview   # lokaal de productie-build bekijken
 
 Het project gebruikt `@sveltejs/adapter-netlify` (geconfigureerd in `vite.config.ts`), met
 een `netlify.toml` die het build-commando en de publish-directory vastlegt. Koppel de
-GitHub-repo aan een nieuwe site op [Netlify](https://netlify.com), zet de vier
+GitHub-repo aan een nieuwe site op [Netlify](https://netlify.com), zet de vijf
 omgevingsvariabelen (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `HOUSEHOLD_PASSCODE`,
-`SESSION_SECRET`) in de site-instellingen — met de gegevens van een **eigen productie-project**,
+`READONLY_PASSCODE`, `SESSION_SECRET`) in de site-instellingen — met de gegevens van een **eigen productie-project**,
 niet het ontwikkel-/testproject uit stap 2 — en deploy.
 
 ## Installeren als app (Android/Chrome)

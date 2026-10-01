@@ -4,6 +4,10 @@ Anti-chronological developer notes on user-facing and structural changes to
 MenuPlanner. Tooling-only changes (CI, dependencies, lint/format config) are
 not logged here — see git log for those.
 
+## 2026-10-01 — Read-only mode
+
+A second passcode (`READONLY_PASSCODE`) logs in a viewer who can browse meals, search and see stats but not add, edit, delete or rename anything. Write UI is hidden, write requests get a 403, and RLS rejects writes from the read-only passcode. Existing databases need `readonly-migration.sql` run once.
+
 ## 2026-08-08 — Disable browser autocomplete on remaining text inputs
 
 Added `autocomplete="off"` to the admin ingredient filter/rename inputs and the meal

@@ -15,12 +15,14 @@
 {#if data.meals.length === 0}
 	<div class="rounded-lg border border-dashed border-gray-300 p-8 text-center">
 		<p class="text-gray-600">Nog geen gerechten gelogd.</p>
-		<a
-			href={resolve('/meals/new')}
-			class="mt-3 inline-block font-medium text-primary-600 underline-offset-2 hover:text-primary-700 hover:underline"
-		>
-			Log je eerste gerecht
-		</a>
+		{#if !data.readOnly}
+			<a
+				href={resolve('/meals/new')}
+				class="mt-3 inline-block font-medium text-primary-600 underline-offset-2 hover:text-primary-700 hover:underline"
+			>
+				Log je eerste gerecht
+			</a>
+		{/if}
 	</div>
 {:else}
 	<div class="space-y-3">

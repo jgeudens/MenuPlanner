@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import type { Db } from './supabase';
 import type {
 	MealFormInput,
 	MealStatsSource,
@@ -32,10 +32,11 @@ function mapMealRow(row: MealRow): MealWithIngredients {
 }
 
 export async function listRecentMeals(
+	db: Db,
 	limit: number,
 	offset: number
 ): Promise<MealWithIngredients[]> {
-	const { data, error } = await supabase
+	const { data, error } = await db
 		.from('meals')
 		.select(MEAL_WITH_INGREDIENTS_SELECT)
 		.order('date', { ascending: false })
@@ -46,8 +47,8 @@ export async function listRecentMeals(
 	return (data as unknown as MealRow[]).map(mapMealRow);
 }
 
-export async function getMeal(id: string): Promise<MealWithIngredients | null> {
-	const { data, error } = await supabase
+export async function getMeal(db: Db, id: string): Promise<MealWithIngredients | null> {
+	const { data, error } = await db
 		.from('meals')
 		.select(MEAL_WITH_INGREDIENTS_SELECT)
 		.eq('id', id)
@@ -57,8 +58,8 @@ export async function getMeal(id: string): Promise<MealWithIngredients | null> {
 	return data ? mapMealRow(data as unknown as MealRow) : null;
 }
 
-export async function createMeal(input: MealFormInput): Promise<string> {
-	const { data, error } = await supabase.rpc('create_meal', {
+export async function createMeal(db: Db, input: MealFormInput): Promise<string> {
+	const { data, error } = await db.rpc('create_meal', {
 		p_name: input.name,
 		p_date: input.date,
 		p_rating: input.rating,
@@ -70,8 +71,8 @@ export async function createMeal(input: MealFormInput): Promise<string> {
 	return (data as { id: string }).id;
 }
 
-export async function updateMeal(id: string, input: MealFormInput): Promise<void> {
-	const { error } = await supabase.rpc('update_meal', {
+export async function updateMeal(db: Db, id: string, input: MealFormInput): Promise<void> {
+	const { error } = await db.rpc('update_meal', {
 		p_meal_id: id,
 		p_name: input.name,
 		p_date: input.date,
@@ -83,17 +84,18 @@ export async function updateMeal(id: string, input: MealFormInput): Promise<void
 	if (error) throw error;
 }
 
-export async function deleteMeal(id: string): Promise<void> {
-	const { error } = await supabase.from('meals').delete().eq('id', id);
+export async function deleteMeal(db: Db, id: string): Promise<void> {
+	const { error } = await db.from('meals').delete().eq('id', id);
 	if (error) throw error;
 }
 
 export async function searchMealsByIngredients(
+	db: Db,
 	ingredientIds: string[]
 ): Promise<MealWithIngredients[]> {
 	if (ingredientIds.length === 0) return [];
 
-	const { data: matches, error: matchError } = await supabase.rpc('search_meals_by_ingredients', {
+	const { data: matches, error: matchError } = await db.rpc('search_meals_by_ingredients', {
 		ingredient_ids: ingredientIds
 	});
 	if (matchError) throw matchError;
@@ -101,7 +103,7 @@ export async function searchMealsByIngredients(
 	const ids = (matches as { id: string }[]).map((m) => m.id);
 	if (ids.length === 0) return [];
 
-	const { data, error } = await supabase
+	const { data, error } = await db
 		.from('meals')
 		.select(MEAL_WITH_INGREDIENTS_SELECT)
 		.in('id', ids)
@@ -112,13 +114,14 @@ export async function searchMealsByIngredients(
 }
 
 export async function searchMealNameSuggestions(
+	db: Db,
 	query: string,
 	limit = 10
 ): Promise<MealSuggestion[]> {
 	const trimmed = query.trim();
 	if (!trimmed) return [];
 
-	const { data, error } = await supabase
+	const { data, error } = await db
 		.from('meals')
 		.select(MEAL_WITH_INGREDIENTS_SELECT)
 		.ilike('name', `${trimmed}%`)
@@ -142,8 +145,8 @@ export async function searchMealNameSuggestions(
 	return suggestions;
 }
 
-export async function getAllMealsForStats(): Promise<MealStatsSource[]> {
-	const { data, error } = await supabase
+export async function getAllMealsForStats(db: Db): Promise<MealStatsSource[]> {
+	const { data, error } = await db
 		.from('meals')
 		.select(MEAL_WITH_INGREDIENTS_SELECT)
 		.order('date', { ascending: false });
